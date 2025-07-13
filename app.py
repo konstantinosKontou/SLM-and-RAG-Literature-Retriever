@@ -1,5 +1,9 @@
 import os
 import streamlit as st
+from indexing.indexer import index_pdfs
+from indexing.embedder import get_embedder
+
+from config import EMBED_MODEL_NAME, INDEX_PATH, DOC_STORE_PATH, CHUNK_SIZE, CHUNK_OVERLAP
 
 # SIDEBAR
 st.sidebar.title("Settings")
@@ -22,3 +26,8 @@ if ask_button and user_question:
     # IF EXISTS
     else:
         st.success(f"Folder '{pdf_folder}' found.")
+
+        # PROCEED WITH THE INDEXING OF THE DOCUMENTS (PDF FROM LOCAL FOLDER)
+        st.info("Indexing documents (if not already indexed)...")
+        embedder = get_embedder(EMBED_MODEL_NAME)
+        index_pdfs(pdf_folder, embedder, INDEX_PATH, DOC_STORE_PATH, CHUNK_SIZE, CHUNK_OVERLAP)
