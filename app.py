@@ -27,7 +27,7 @@ if ask_button and user_question:
     else:
         st.success(f"Folder '{pdf_folder}' found.")
 
-        # PROCEED WITH THE INDEXING OF THE DOCUMENTS (PDF FROM LOCAL FOLDER)
+        # PROCEED WITH THE INDEXING OF THE DOCUMENTS (INDEX, CHUNK, EMBEDDING)
         st.info("Indexing documents (if not already indexed)...")
         embedder = get_embedder(EMBED_MODEL_NAME)
         index_pdfs(pdf_folder, embedder, INDEX_PATH, DOC_STORE_PATH, CHUNK_SIZE, CHUNK_OVERLAP)
