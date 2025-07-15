@@ -1,3 +1,4 @@
+import streamlit as st
 import os
 import fitz  # PyMuPDF
 import pickle
@@ -48,9 +49,10 @@ def remove_references_section(text: str) -> str:
 def index_pdfs(pdf_dir, embedder, index_path, store_path, chunk_size, overlap):
     if os.path.exists(index_path) and os.path.exists(store_path):
         print("Index and store already exist. Skipping.")
+        st.info("Index and store already exist.")
         return
 
-    texts, metadata = [] , []
+    all_chunks = []
     pdf_files = sorted([f for f in os.listdir(pdf_dir) if f.endswith(".pdf")])
 
     if not pdf_files:
@@ -83,6 +85,7 @@ def index_pdfs(pdf_dir, embedder, index_path, store_path, chunk_size, overlap):
         # CHUNKING
         chunks = chunk_document(cleaned_text, chunk_size, overlap)
 
+        # LOGGING CHUNKS FOR DEBUG
         # for idx, chunk in enumerate(chunks):
         #     print(f"\n--- Chunk {idx + 1} ---")
         #     print(chunk)
@@ -90,11 +93,26 @@ def index_pdfs(pdf_dir, embedder, index_path, store_path, chunk_size, overlap):
         #
 
         for chunk in chunks:
-            texts.append(chunk)
-            metadata.append({
+            all_chunks.append({
+                "text": chunk,
                 "source": fname,
                 "path": os.path.abspath(path),
                 "title": doc_meta["title"],
                 "author": doc_meta["author"],
                 "year": doc_meta["year"]
             })
+
+    texts = [chunk["text"] for chunk in all_chunks]
+    embeddings = embedder.encode(texts, convert_to_numpy=True)
+    embeddings = normalize(embeddings)
+
+    index = faiss.IndexFlatL2(embeddings.shape[1])
+    index.add(embeddings)
+
+    os.makedirs(os.path.dirname(index_path), exist_ok=True)
+    os.makedirs(os.path.dirname(store_path), exist_ok=True)
+
+    # SAVE INDEX AND CHUNK
+    faiss.write_index(index, index_path)
+    with open(store_path, "wb") as f:
+        pickle.dump(all_chunks, f)

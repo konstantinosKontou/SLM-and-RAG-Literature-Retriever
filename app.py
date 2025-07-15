@@ -2,6 +2,7 @@ import os
 import streamlit as st
 from indexing.indexer import index_pdfs
 from indexing.embedder import get_embedder
+from retrieval.retriever import retrieve_chunks
 
 from config import EMBED_MODEL_NAME, INDEX_PATH, DOC_STORE_PATH, CHUNK_SIZE, CHUNK_OVERLAP
 
@@ -31,3 +32,12 @@ if ask_button and user_question:
         st.info("Indexing documents (if not already indexed)...")
         embedder = get_embedder(EMBED_MODEL_NAME)
         index_pdfs(pdf_folder, embedder, INDEX_PATH, DOC_STORE_PATH, CHUNK_SIZE, CHUNK_OVERLAP)
+
+        st.info(f"Searching Top {top_k} documents...")
+        chunks = retrieve_chunks(user_question, embedder, INDEX_PATH, DOC_STORE_PATH, top_k)
+
+        # LOGGING CHUNKS FOR DEBUG
+        for idx, chunk in enumerate(chunks):
+            print(f"\n--- Chunk {idx + 1} ---")
+            print("Text:\n", chunk.get("text", "[No text found]")[:300], "...\n")  # limit to first 300 chars
+            print("Metadata:\n", {k: v for k, v in chunk.items() if k != "text"})
