@@ -6,6 +6,9 @@ This tool is a local academic literature retriever that uses Small Language Mode
 ```bash
 git clone https://github.com/yourusername/SLM-and-RAG-Literature-Retriever.git
 ```
+```bash
+cd SLM-and-RAG-Literature-Retriever
+```
 
 ## Setup Instructions
 
