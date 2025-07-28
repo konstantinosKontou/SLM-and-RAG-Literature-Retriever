@@ -2,6 +2,11 @@
 
 This tool is a local academic literature retriever that uses Small Language Models (SLMs) and Retrieval-Augmented Generation (RAG).
 
+## Cloning the Repository
+```bash
+git clone https://github.com/yourusername/SLM-and-RAG-Literature-Retriever.git
+```
+
 ## Setup Instructions
 
 Follow the steps below to install the necessary dependencies and run the app:
