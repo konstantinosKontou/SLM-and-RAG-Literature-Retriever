@@ -43,7 +43,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-4. Install Ollama (needed to run the Qwen model locally)
+4. Install Ollama (needed to run the SLM locally)
 ```bash
 curl -fsSL https://ollama.com/install.sh | sh
 ```
