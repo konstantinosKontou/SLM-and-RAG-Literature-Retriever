@@ -2,6 +2,15 @@
 
 This tool is a local academic literature retriever that uses Small Language Models (SLMs) and Retrieval-Augmented Generation (RAG).
 
+## Required Dependencies
+faiss_cpu==1.11.0
+PyMuPDF==1.26.1
+langchain==0.3.27
+Requests==2.32.4
+scikit_learn==1.7.1
+sentence_transformers==4.1.0
+streamlit==.37.1
+
 ## Cloning the Repository
 ```bash
 git clone https://github.com/yourusername/SLM-and-RAG-Literature-Retriever.git
