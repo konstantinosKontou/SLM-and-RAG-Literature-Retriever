@@ -14,12 +14,15 @@ cd SLM-and-RAG-Literature-Retriever
 
 Follow the steps below to install the necessary dependencies and run the app:
 
-```bash
 # 1. Create a virtual environment
+```bash
 python3 -m venv .venv
+```
 
 # If you get an error, install the venv module (for Python 3.12)
+```bash
 sudo apt install python3.12-venv
+```
 
 # 2. Activate the virtual environment
 source .venv/bin/activate
