@@ -34,14 +34,8 @@ if ask_button and user_question:
         embedder = get_embedder(EMBED_MODEL_NAME)
         index_pdfs(pdf_folder, embedder, INDEX_PATH, DOC_STORE_PATH, CHUNK_SIZE, CHUNK_OVERLAP)
 
-        st.info(f"Searching Top {top_k} documents...")
+        # st.info(f"Searching Top {top_k} documents...")
         chunks = retrieve_chunks(user_question, embedder, INDEX_PATH, DOC_STORE_PATH, top_k)
-
-        # # LOGGING CHUNKS FOR DEBUG
-        # for idx, chunk in enumerate(chunks):
-        #     print(f"\n--- Chunk {idx + 1} ---")
-        #     print("Text:\n", chunk.get("text", "[No text found]")[:300], "...\n")  # limit to first 300 chars
-        #     print("Metadata:\n", {k: v for k, v in chunk.items() if k != "text"})
 
         context = "\n\n".join(c['text'] for c in chunks)
         metadata_info = "\n".join(
@@ -77,10 +71,10 @@ if ask_button and user_question:
 
         ## Expected Answer Format:
 
-        Answer: <your response here based strictly on the excerpts>
+        Answer: <a summarise of the decided excepts>
 
         Sources Cited:
-        1. **<source file>** — Title: <title or N/A>, Year: <year>
+        1. **<source file>** — Title: <title or N/A>, Year: <year>, Author: <author>
            - Relevant excerpt(s):
              - "<first matching quote>"
              - "<second matching quote>" (if needed)
@@ -93,4 +87,41 @@ if ask_button and user_question:
             answer = ask_model(prompt)
 
         st.subheader("Answer")
-        st.success(answer)
+
+        if "Answer:" in answer and "Sources Cited:" in answer:
+            # Split the answer into 3 parts: intro, answer, sources
+            model_thought_part, rest = answer.split("Answer:", 1)
+            answer_part, sources_part = rest.split("Sources Cited:", 1)
+
+            st.markdown("**Answer:**")
+            st.markdown(answer_part.strip(), unsafe_allow_html=True)
+
+            st.markdown("---")
+            st.markdown("**Sources Cited:**")
+            st.info(sources_part.strip())
+
+            with st.expander("Model Thought"):
+                st.markdown(model_thought_part.strip(), unsafe_allow_html=True)
+
+        elif "Answer:" in answer:
+            model_thought_part, answer_part = answer.split("Answer:", 1)
+
+            st.markdown("**Answer:**")
+            st.markdown(answer_part.strip(), unsafe_allow_html=True)
+
+            with st.expander("Model Thought"):
+                st.markdown(model_thought_part.strip(), unsafe_allow_html=True)
+
+        elif "Sources Cited:" in answer:
+            answer_part, sources_part = answer.split("Sources Cited:", 1)
+
+            st.markdown("**Answer:**")
+            st.markdown(answer_part.strip(), unsafe_allow_html=True)
+
+            st.markdown("---")
+            st.markdown("**Sources Cited:**")
+            st.info(sources_part.strip())
+
+        else:
+            st.warning("Could not find 'Answer:' or 'Sources Cited:' in the response.")
+            st.success(answer)
