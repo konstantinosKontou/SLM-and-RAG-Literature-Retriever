@@ -11,18 +11,21 @@ def retrieve_chunks(query, embedder, index_path, store_path, k):
     q_embed = embedder.encode([query], convert_to_numpy=True)
     q_embed = normalize(q_embed)
 
-
-    D, I = index.search(q_embed, k * 5)
+    D, I = index.search(q_embed, k * 10)
 
     results = []
-    seen_sources = set()
+    seen_paths = {}
 
     for idx in I[0]:
         item = data[idx]
-        source = item.get("source")
-        if source not in seen_sources:
-            seen_sources.add(source)
-            results.append(item)
+        path = item.get("path")
+
+        if path in seen_paths:
+            seen_paths[path]["text"] += "\n" + item["text"]
+        else:
+            seen_paths[path] = item
+            results.append(seen_paths[path])
+
         if len(results) >= k:
             break
 
